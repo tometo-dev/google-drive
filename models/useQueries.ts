@@ -1,11 +1,8 @@
 import { useQuery } from "react-query"
-import axios from "axios"
-import { LIST_RESOURCE } from "./api"
+import { listResources } from "./resource"
 
 export function useResourceList(path: string) {
   return useQuery({
-    queryKey: ["list-resource", path], queryFn: async () => {
-      return (await axios.get(LIST_RESOURCE)).data
-    }
+    queryKey: ["list-resource", path], queryFn: () => listResources(path)
   })
 }

@@ -1,3 +1,6 @@
+import axios from "axios"
+import { LIST_RESOURCE } from "./api"
+
 type FileResource = {
   name: string,
   type: "file"
@@ -10,3 +13,7 @@ type FolderResource = {
 }
 
 export type Resource = FileResource | FolderResource
+
+export async function listResources(path: string) {
+  return (await axios.get(LIST_RESOURCE)).data
+}
