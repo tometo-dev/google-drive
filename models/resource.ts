@@ -9,11 +9,11 @@ type FileResource = {
 type FolderResource = {
   name: string,
   type: "folder",
-  children: Array<FileResource | FolderResource>
+  children: Record<string, FileResource | FolderResource>
 }
 
 export type Resource = FileResource | FolderResource
 
 export async function listResources(path: string) {
-  return (await axios.get(LIST_RESOURCE)).data
+  return (await axios.get(`${LIST_RESOURCE}?path=${path}`)).data
 }

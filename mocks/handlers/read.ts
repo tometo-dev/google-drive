@@ -4,7 +4,7 @@ import { rest } from "msw"
 import { db } from "../db"
 import { LIST_RESOURCE } from "../../models/api"
 
-function list(path: string) {
+function list(path: string | null) {
   if (!path) {
     return db
   }
@@ -13,7 +13,8 @@ function list(path: string) {
 }
 
 export const readHandlers = [
-  rest.get(LIST_RESOURCE, (_req, res, ctx) => {
-    return res(ctx.json(list('')), ctx.status(200))
+  rest.get(LIST_RESOURCE, (req, res, ctx) => {
+    const path = req.url.searchParams.get("path")
+    return res(ctx.json(list(path)), ctx.status(200))
   })
 ]
