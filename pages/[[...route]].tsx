@@ -3,14 +3,15 @@ import { useRouter } from "next/router"
 import { dehydrate, QueryClient } from "react-query"
 import { useMemo } from "react"
 
-import { FileIcon, AddNewIcon, FolderIcon } from "../components/icons"
+import { AddNewIcon } from "../components/icons"
 import { prefetchResourceList, useResourceList } from "../models"
+import { Resource } from "../components"
 
 const getCurrentPath = (route: string | string[] | undefined) => {
   let path = ""
   if (route) {
     if (Array.isArray(route)) {
-      path = route.join(".children.")
+      path = `${route.join(".children.")}.children`
     } else {
       path = route
     }
@@ -27,10 +28,22 @@ export default function Home() {
 
   const { data } = useResourceList(currentPath)
 
+  if (!data) {
+    return null
+  }
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+    <div className="w-full h-full flex gap-4 items-center">
+      {Object.keys(data).map((key) => {
+        return (
+          <Resource
+            key={data[key].name}
+            type={data[key].type}
+            name={data[key].name}
+          />
+        )
+      })}
+      <AddNewIcon />
     </div>
   )
 }

@@ -9,7 +9,12 @@ function seedResources(): Record<string, Resource> {
         "Something": {
           name: "Something",
           type: "folder",
-          children: {}
+          children: {
+            "Something Else": {
+              name: "Something Else",
+              type: "file"
+            }
+          }
         }
       }
     },

@@ -14,6 +14,6 @@ type FolderResource = {
 
 export type Resource = FileResource | FolderResource
 
-export async function listResources(path: string) {
+export async function listResources(path: string): Promise<Record<string, Resource>> {
   return (await axios.get(`${LIST_RESOURCE}?path=${path}`)).data
 }
