@@ -1,8 +1,12 @@
 import { DialogOverlay, DialogContent } from "@reach/dialog"
 import { Tabs, TabList, Tab, TabPanel, TabPanels } from "@reach/tabs"
 import * as React from "react"
+import { useRouter } from "next/router"
 import clsx from "clsx"
 import "@reach/dialog/styles.css"
+import { useQueryClient } from "react-query"
+
+import { useCreateResourceMutation } from "../models"
 
 export interface CreateNewDialogProps {
   open: boolean
@@ -10,10 +14,30 @@ export interface CreateNewDialogProps {
 }
 
 export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
+  const mutation = useCreateResourceMutation()
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
   const handleResourceCreate =
-    (type: "file" | "folder") => (event: React.FormEvent) => {
+    (type: "file" | "folder") =>
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault()
-      console.log({ type })
+      const data = new FormData(event.currentTarget)
+      const values = Object.fromEntries(data.entries())
+      console.log({ values })
+      mutation.mutate(
+        {
+          name: values.resourceName as string,
+          path: decodeURI(router.asPath),
+          type: type,
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["list-resource"])
+            onClose()
+          },
+        }
+      )
     }
 
   return (
