@@ -3,9 +3,8 @@ import { useRouter } from "next/router"
 import { dehydrate, QueryClient } from "react-query"
 import { useMemo } from "react"
 
-import { AddNewIcon } from "../components/icons"
 import { prefetchResourceList, useResourceList } from "../models"
-import { Resource } from "../components"
+import { ResourceList, ResourceListProps } from "../components"
 
 const getCurrentPath = (route: string | string[] | undefined) => {
   let path = ""
@@ -20,7 +19,7 @@ const getCurrentPath = (route: string | string[] | undefined) => {
 }
 
 export default function Home() {
-  const { query } = useRouter()
+  const { query, asPath } = useRouter()
 
   const currentPath = useMemo(() => {
     return getCurrentPath(query.route)
@@ -28,24 +27,19 @@ export default function Home() {
 
   const { data } = useResourceList(currentPath)
 
-  if (!data) {
-    return null
-  }
+  const resources: ResourceListProps["resources"] = useMemo(() => {
+    if (data) {
+      return Object.keys(data).map((key) => ({
+        name: data[key].name,
+        type: data[key].type,
+        link: `${asPath.replace(/\/$/, "")}/${data[key].name}`,
+      }))
+    } else {
+      return []
+    }
+  }, [data, asPath])
 
-  return (
-    <div className="w-full h-full flex gap-4 items-center">
-      {Object.keys(data).map((key) => {
-        return (
-          <Resource
-            key={data[key].name}
-            type={data[key].type}
-            name={data[key].name}
-          />
-        )
-      })}
-      <AddNewIcon />
-    </div>
-  )
+  return <ResourceList resources={resources} />
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
