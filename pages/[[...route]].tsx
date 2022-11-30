@@ -46,10 +46,17 @@ export default function Home() {
   )
 }
 
+/** Disabling prefetching as it is leading to inconsistent data
+ * due to localStorage persistence, which is not available at the server
+ *
+ * An app with an actual backend will not face this problem
+ */
+/*
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   const currentRoute: string | Array<string> | undefined = query.route
   const currentPath = getCurrentPath(currentRoute)
 
+ 
   const queryClient = new QueryClient()
   await prefetchResourceList(queryClient, currentPath)
 
@@ -59,3 +66,4 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
     },
   }
 }
+*/
