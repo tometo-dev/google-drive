@@ -32,17 +32,20 @@ function create(name: string, type: "file" | "folder", path?: string) {
       [name]: result
     })
   } else {
-    console.log("here")
     Object.assign(db, { [name]: result })
   }
+
+  /** Persisting data to the localStorage
+   * In an actual application, this will not be needed as there would be
+   * an actual backend instead of these api mocks
+   */
+  localStorage.setItem("gd-resource-data", JSON.stringify(db))
 }
 
 export const createHandlers = [
   rest.post(CREATE_RESOURCE, async (req, res, ctx) => {
     const body: CreateResourcePostParams = await req.json()
     const objectPath = urlPathToObjectPath(body.path)
-
-    console.log({ objectPath, body })
 
     create(body.name, body.type, objectPath)
 

@@ -5,6 +5,22 @@ import { db } from "../db"
 import { LIST_RESOURCE } from "../../models/api"
 
 function list(path: string | null) {
+
+  /**
+   * We are restoring the data from localStorage on every read operation.
+   * This is not the optimum solution and this should be done just once at the beginning
+   * But to keep things consistent always, this is being done here.
+   * 
+   * In an actual application, these data will be in a backend database, and hence
+   * wouldn't require this.
+   */
+  if (typeof window !== "undefined") {
+    const persistedData = localStorage.getItem("gd-resource-data")
+    if (persistedData) {
+      Object.assign(db, JSON.parse(persistedData))
+    }
+  }
+
   if (!path) {
     return db
   }
