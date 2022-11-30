@@ -41,7 +41,7 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
 
   return (
     <DialogOverlay isOpen={open} onDismiss={onClose}>
-      <DialogContent className="relative rounded-lg">
+      <DialogContent className="relative rounded-lg min-w-[22rem] max-w-[22rem]">
         <div
           className="absolute top-2 right-4 cursor-pointer"
           onClick={onClose}

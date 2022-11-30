@@ -4,7 +4,7 @@ import { dehydrate, QueryClient } from "react-query"
 import { useMemo } from "react"
 
 import { prefetchResourceList, useResourceList } from "../models"
-import { ResourceList, ResourceListProps } from "../components"
+import { Layout, ResourceList, ResourceListProps } from "../components"
 
 const getCurrentPath = (route: string | string[] | undefined) => {
   let path = ""
@@ -39,7 +39,11 @@ export default function Home() {
     }
   }, [data, asPath])
 
-  return <ResourceList resources={resources} />
+  return (
+    <Layout>
+      <ResourceList resources={resources} />
+    </Layout>
+  )
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {

@@ -53,7 +53,7 @@ export function ResourceList({ resources }: ResourceListProps) {
   }
 
   return (
-    <div className="w-full h-full flex gap-4 items-center">
+    <div className="w-full flex gap-4 flex-wrap items-center">
       {resources.map((resource) =>
         resource.type === "file" ? (
           <Resource
