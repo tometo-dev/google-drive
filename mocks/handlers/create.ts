@@ -35,6 +35,9 @@ function create(name: string, type: "file" | "folder", path?: string) {
       [nameWithoutDot]: result
     })
   } else {
+    if (db[nameWithoutDot] != undefined) {
+      return false
+    }
     Object.assign(db, { [nameWithoutDot]: result })
   }
 
@@ -54,6 +57,5 @@ export const createHandlers = [
     } else {
       return res(ctx.status(500), ctx.json({ error: `Resource with ${body.name} already exists` }))
     }
-
   })
 ]
