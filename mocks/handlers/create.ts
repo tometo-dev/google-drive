@@ -4,6 +4,7 @@ import { rest } from "msw"
 import { CREATE_RESOURCE } from "../../models/api";
 import { CreateResourcePostParams } from "../../models/resource";
 import { db } from "../db";
+import { updateLocalDB } from "../../utils";
 
 function urlPathToObjectPath(path: string) {
   const pathArray = path.split("/").filter(x => !!x)
@@ -35,11 +36,9 @@ function create(name: string, type: "file" | "folder", path?: string) {
     Object.assign(db, { [name]: result })
   }
 
-  /** Persisting data to the localStorage
-   * In an actual application, this will not be needed as there would be
-   * an actual backend instead of these api mocks
-   */
-  localStorage.setItem("gd-resource-data", JSON.stringify(db))
+
+  //Persisting data to the localStorage
+  updateLocalDB(db)
 }
 
 export const createHandlers = [

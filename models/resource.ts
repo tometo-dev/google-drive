@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CREATE_RESOURCE, LIST_RESOURCE } from "./api"
+import { CREATE_RESOURCE, DELETE_RESOURCE, LIST_RESOURCE, RENAME_RESOURCE } from "./api"
 
 type FileResource = {
   name: string,
@@ -30,4 +30,22 @@ export async function createResource({ path, name, type }: CreateResourcePostPar
     name: name,
     type: type
   })
+}
+
+export type RenameResourceParams = {
+  path: string,
+  oldName: string,
+  newName: string,
+}
+export async function renameResource(params: RenameResourceParams) {
+  return await axios.put(RENAME_RESOURCE, params)
+}
+
+export type DeleteResourceParams = {
+  path: string,
+  name: string,
+}
+
+export async function deleteResource({ name, path }: DeleteResourceParams) {
+  return await axios.delete(`${DELETE_RESOURCE}?path=${path}&name=${name}`)
 }

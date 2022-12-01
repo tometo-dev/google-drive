@@ -29,11 +29,13 @@ export default function Home() {
 
   const resources: ResourceListProps["resources"] = useMemo(() => {
     if (data) {
-      return Object.keys(data).map((key) => ({
-        name: data[key].name,
-        type: data[key].type,
-        link: `${asPath.replace(/\/$/, "")}/${data[key].name}`,
-      }))
+      return Object.keys(data)
+        .map((key) => ({
+          name: data[key].name,
+          type: data[key].type,
+          link: `${asPath.replace(/\/$/, "")}/${data[key].name}`,
+        }))
+        .sort((a, b) => b.type.localeCompare(a.type))
     } else {
       return []
     }

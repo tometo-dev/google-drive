@@ -1,8 +1,12 @@
-import Link from "next/link"
-import { useState } from "react"
+import { useRouter } from "next/router"
+import * as React from "react"
+import { Menu, MenuList, MenuButton, MenuItem } from "@reach/menu-button"
+import "@reach/menu-button/styles.css"
 import { CreateNewDialog } from "./create-new-dialog"
 
 import { AddNewIcon, FileIcon, FolderIcon } from "./icons"
+import { useDeleteResourceMutation, useRenameResourceMutation } from "../models"
+import { useQueryClient } from "react-query"
 
 type ResourceListFileItem = {
   name: string
@@ -18,23 +22,87 @@ type ResourceListFolderItem = {
 type ResourceProps = ResourceListFileItem | ResourceListFolderItem
 
 function Resource(props: ResourceProps) {
-  if (props.type === "file") {
-    return (
-      <div className="flex gap-2 flex-col justify-center items-center">
-        <FileIcon />
-        <span>{props.name}</span>
-      </div>
-    )
-  } else {
-    return (
-      <div className="flex gap-2 flex-col justify-center items-center">
-        <Link href={props.link}>
-          <FolderIcon />
-          <span>{props.name}</span>
-        </Link>
-      </div>
+  const router = useRouter()
+  const hiddenDivRef = React.useRef<any>()
+
+  const queryClient = useQueryClient()
+  const renameMutation = useRenameResourceMutation()
+  const deleteMutation = useDeleteResourceMutation()
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    /** This is to prevent the default mouse down event, which is captured by the <MenuButton> component
+     * See: https://github.com/reach/reach-ui/blob/43f450db7bcb25a743121fe31355f2294065a049/packages/dropdown/src/reach-dropdown.tsx#L268
+     */
+    event.preventDefault()
+  }
+
+  const handleResourceContextClick = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    /**
+     * 1. Prevent the default browser behavior
+     * 2. Dispatch a new event from the hidden div
+     * 3. The newly dispatched event is captured by the onMouseDownHandler of <MenuButton> component to open the context menu
+     */
+    event.stopPropagation()
+    event.preventDefault()
+    hiddenDivRef.current.dispatchEvent(
+      new Event("mousedown", { bubbles: true })
     )
   }
+
+  const handleDoubleClick =
+    (link: string) => (_event: React.MouseEvent<HTMLDivElement>) => {
+      router.push(link)
+    }
+
+  return (
+    <Menu>
+      <MenuButton>
+        <div ref={hiddenDivRef} className="hidden"></div>
+        {props.type === "file" ? (
+          <div
+            className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
+            onContextMenu={handleResourceContextClick}
+            onMouseDown={handleMouseDown}
+          >
+            <FileIcon />
+            <span>{props.name}</span>
+          </div>
+        ) : (
+          <div
+            className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
+            onDoubleClick={handleDoubleClick(props.link)}
+            onMouseDown={handleMouseDown}
+            onContextMenu={handleResourceContextClick}
+          >
+            <FolderIcon />
+            <span>{props.name}</span>
+          </div>
+        )}
+      </MenuButton>
+      <MenuList>
+        <MenuItem onSelect={() => {}}>Rename</MenuItem>
+        <MenuItem
+          onSelect={() => {
+            deleteMutation.mutate(
+              {
+                name: props.name,
+                path: router.asPath.split("?")[0].replace(/\/$/, ""),
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries(["list-resource"])
+                },
+              }
+            )
+          }}
+        >
+          <span className="text-red-600">Delete</span>
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  )
 }
 
 export interface ResourceListProps {
@@ -42,7 +110,7 @@ export interface ResourceListProps {
 }
 
 export function ResourceList({ resources }: ResourceListProps) {
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = React.useState(false)
 
   const handleAddNewClick = () => {
     setDialogOpen((open) => !open)

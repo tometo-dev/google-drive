@@ -3,6 +3,7 @@ import { rest } from "msw"
 
 import { db } from "../db"
 import { LIST_RESOURCE } from "../../models/api"
+import { readFromLocalDB } from "../../utils"
 
 function list(path: string | null) {
 
@@ -14,11 +15,11 @@ function list(path: string | null) {
    * In an actual application, these data will be in a backend database, and hence
    * wouldn't require this.
    */
-  if (typeof window !== "undefined") {
-    const persistedData = localStorage.getItem("gd-resource-data")
-    if (persistedData) {
-      Object.assign(db, JSON.parse(persistedData))
-    }
+
+  const persistedData = readFromLocalDB()
+
+  if (persistedData) {
+    Object.assign(db, persistedData)
   }
 
   if (!path) {
