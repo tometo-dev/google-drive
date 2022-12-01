@@ -1,10 +1,13 @@
 import type { GetServerSidePropsContext } from "next"
 import { useRouter } from "next/router"
 import { dehydrate, QueryClient } from "react-query"
-import { useMemo } from "react"
+import * as React from "react"
 
 import { prefetchResourceList, useResourceList } from "../models"
 import { Layout, ResourceList, ResourceListProps } from "../components"
+import { BreadCrumbs } from "../components/breadcrumbs"
+import { SearchBar } from "../components/search-bar"
+import { useDebounce } from "../utils"
 
 const getCurrentPath = (route: string | string[] | undefined) => {
   let path = ""
@@ -21,19 +24,31 @@ const getCurrentPath = (route: string | string[] | undefined) => {
 export default function Home() {
   const { query, asPath } = useRouter()
 
-  const currentPath = useMemo(() => {
+  const currentPath = React.useMemo(() => {
     return getCurrentPath(query.route)
   }, [query.route])
 
-  const { data } = useResourceList(currentPath)
+  const [searchText, setSearchText] = React.useState("")
 
-  const resources: ResourceListProps["resources"] = useMemo(() => {
+  const debouncedSearchText = useDebounce(searchText)
+
+  const handleSearchTextChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = event.target.value
+
+    setSearchText(value)
+  }
+
+  const { data } = useResourceList(currentPath, debouncedSearchText)
+
+  const resources: ResourceListProps["resources"] = React.useMemo(() => {
     if (data) {
-      return Object.keys(data)
-        .map((key) => ({
-          name: data[key].name,
-          type: data[key].type,
-          link: `${asPath.replace(/\/$/, "")}/${data[key].name}`,
+      return data
+        .map((resource) => ({
+          name: resource.name,
+          type: resource.type,
+          link: `${asPath.replace(/\/$/, "")}/${resource.name}`,
         }))
         .sort((a, b) => b.type.localeCompare(a.type))
     } else {
@@ -42,9 +57,15 @@ export default function Home() {
   }, [data, asPath])
 
   return (
-    <Layout>
-      <ResourceList resources={resources} />
-    </Layout>
+    <Layout
+      navbar={
+        <>
+          <BreadCrumbs />
+          <SearchBar value={searchText} onChange={handleSearchTextChange} />
+        </>
+      }
+      content={<ResourceList resources={resources} />}
+    />
   )
 }
 

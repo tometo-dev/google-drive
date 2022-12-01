@@ -2,7 +2,10 @@ import * as React from "react"
 import clsx from "clsx"
 
 export interface SearchBarProps
-  extends React.HTMLAttributes<HTMLInputElement> {}
+  extends React.DetailedHTMLProps<
+    React.InputHTMLAttributes<HTMLInputElement>,
+    HTMLInputElement
+  > {}
 
 export const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(
   function SearchBar({ className, ...rest }, ref) {

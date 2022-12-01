@@ -14,8 +14,13 @@ type FolderResource = {
 
 export type Resource = FileResource | FolderResource
 
-export async function listResources(path: string): Promise<Record<string, Resource>> {
-  return (await axios.get(`${LIST_RESOURCE}?path=${path}`)).data
+export async function listResources(path: string, searchText?: string): Promise<Array<Resource>> {
+  let url = `${LIST_RESOURCE}?path=${path}`
+
+  if (searchText) {
+    url = `${url}&searchText=${searchText}`
+  }
+  return (await axios.get(url)).data
 }
 
 export type CreateResourcePostParams = {

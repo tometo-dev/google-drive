@@ -4,8 +4,13 @@ import { rest } from "msw"
 import { db } from "../db"
 import { LIST_RESOURCE } from "../../models/api"
 import { readFromLocalDB } from "../../utils"
+import { Resource } from "../../models"
 
-function list(path: string | null) {
+function objectToArray(ob: Record<string, Resource>): Array<Resource> {
+  return Object.keys(ob).map(key => ob[key])
+}
+
+function list(path: string | null, searchText: string | null): Array<Resource> {
 
   /**
    * We are restoring the data from localStorage on every read operation.
@@ -22,16 +27,21 @@ function list(path: string | null) {
     Object.assign(db, persistedData)
   }
 
-  if (!path) {
-    return db
+  if (searchText) {
+    /** Since the search is global, if searchText is present, ignore the path, do a global search and return the values */
   }
 
-  return get(db, path)
+  if (!path) {
+    return objectToArray(db)
+  }
+
+  return objectToArray(get(db, path) as any)
 }
 
 export const readHandlers = [
   rest.get(LIST_RESOURCE, (req, res, ctx) => {
     const path = req.url.searchParams.get("path")
-    return res(ctx.json(list(path)), ctx.status(200))
+    const searchText = req.url.searchParams.get("searchText")
+    return res(ctx.json(list(path, searchText)), ctx.status(200))
   })
 ]
