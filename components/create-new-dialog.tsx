@@ -90,6 +90,7 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
                         name="resourceName"
                         type="text"
                         placeholder="Name"
+                        required
                       />
                       <button
                         className="bg-blue-400 hover:bg-blue-500 w-full text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline mt-4"
@@ -107,6 +108,8 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
                         name="resourceName"
                         type="text"
                         placeholder="Name"
+                        required
+                        pattern="^[\w\-\s]+$"
                       />
                       <button
                         className="bg-blue-400 hover:bg-blue-500 w-full text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline mt-4"

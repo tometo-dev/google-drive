@@ -12,7 +12,6 @@ function deleteResource(name: string, path: string) {
   } else {
     objectPath = ""
   }
-  console.log({ db, objectPath, name })
   const resourceObject = get(db, objectPath)
 
   /**

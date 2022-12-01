@@ -3,9 +3,10 @@ import * as React from "react"
 import { Menu, MenuList, MenuButton, MenuItem } from "@reach/menu-button"
 import "@reach/menu-button/styles.css"
 import { CreateNewDialog } from "./create-new-dialog"
+import { RenameResourceDialog } from "./rename-resource-dialog"
 
 import { AddNewIcon, FileIcon, FolderIcon } from "./icons"
-import { useDeleteResourceMutation, useRenameResourceMutation } from "../models"
+import { useDeleteResourceMutation } from "../models"
 import { useQueryClient } from "react-query"
 
 type ResourceListFileItem = {
@@ -26,8 +27,9 @@ function Resource(props: ResourceProps) {
   const hiddenDivRef = React.useRef<any>()
 
   const queryClient = useQueryClient()
-  const renameMutation = useRenameResourceMutation()
   const deleteMutation = useDeleteResourceMutation()
+
+  const [renameDialogOpen, setRenameDialogOpen] = React.useState(false)
 
   const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     /** This is to prevent the default mouse down event, which is captured by the <MenuButton> component
@@ -57,51 +59,65 @@ function Resource(props: ResourceProps) {
     }
 
   return (
-    <Menu>
-      <MenuButton>
-        <div ref={hiddenDivRef} className="hidden"></div>
-        {props.type === "file" ? (
-          <div
-            className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
-            onContextMenu={handleResourceContextClick}
-            onMouseDown={handleMouseDown}
+    <>
+      <Menu>
+        <MenuButton>
+          <div ref={hiddenDivRef} className="hidden"></div>
+          {props.type === "file" ? (
+            <div
+              className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
+              onContextMenu={handleResourceContextClick}
+              onMouseDown={handleMouseDown}
+            >
+              <FileIcon />
+              <span>{props.name}</span>
+            </div>
+          ) : (
+            <div
+              className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
+              onDoubleClick={handleDoubleClick(props.link)}
+              onMouseDown={handleMouseDown}
+              onContextMenu={handleResourceContextClick}
+            >
+              <FolderIcon />
+              <span>{props.name}</span>
+            </div>
+          )}
+        </MenuButton>
+        <MenuList>
+          <MenuItem
+            onSelect={() => {
+              setRenameDialogOpen(true)
+            }}
           >
-            <FileIcon />
-            <span>{props.name}</span>
-          </div>
-        ) : (
-          <div
-            className="flex gap-2 flex-col justify-center items-center hover:bg-blue-100 p-4"
-            onDoubleClick={handleDoubleClick(props.link)}
-            onMouseDown={handleMouseDown}
-            onContextMenu={handleResourceContextClick}
-          >
-            <FolderIcon />
-            <span>{props.name}</span>
-          </div>
-        )}
-      </MenuButton>
-      <MenuList>
-        <MenuItem onSelect={() => {}}>Rename</MenuItem>
-        <MenuItem
-          onSelect={() => {
-            deleteMutation.mutate(
-              {
-                name: props.name,
-                path: router.asPath.split("?")[0].replace(/\/$/, ""),
-              },
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries(["list-resource"])
+            Rename
+          </MenuItem>
+          <MenuItem
+            onSelect={() => {
+              deleteMutation.mutate(
+                {
+                  name: props.name,
+                  path: router.asPath.split("?")[0].replace(/\/$/, ""),
                 },
-              }
-            )
-          }}
-        >
-          <span className="text-red-600">Delete</span>
-        </MenuItem>
-      </MenuList>
-    </Menu>
+                {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries(["list-resource"])
+                  },
+                }
+              )
+            }}
+          >
+            <span className="text-red-600">Delete</span>
+          </MenuItem>
+        </MenuList>
+      </Menu>
+      <RenameResourceDialog
+        open={renameDialogOpen}
+        onClose={() => void setRenameDialogOpen(false)}
+        oldName={props.name}
+        type={props.type}
+      />
+    </>
   )
 }
 

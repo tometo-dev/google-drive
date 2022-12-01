@@ -8,6 +8,12 @@ export interface AddNewProps {
 }
 export function AddNew({ onClick }: AddNewProps) {
   return (
-    <Image src={addNew} alt="" onClick={onClick} className="cursor-pointer" />
+    <Image
+      src={addNew}
+      alt=""
+      onClick={onClick}
+      className="cursor-pointer"
+      priority={true}
+    />
   )
 }

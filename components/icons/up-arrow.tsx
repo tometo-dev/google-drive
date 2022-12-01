@@ -17,6 +17,7 @@ export function UpArrow({ onClick, disabled }: UpArrowProps) {
         className={clsx({ "cursor-pointer": !disabled })}
         height={24}
         width={24}
+        priority={true}
       />
     </button>
   )
