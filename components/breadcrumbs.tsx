@@ -1,6 +1,7 @@
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { UpArrowIcon } from "./icons"
+import { Fragment } from "react"
 
 export function BreadCrumbs() {
   const router = useRouter()
@@ -33,12 +34,12 @@ export function BreadCrumbs() {
         <div>root</div>
       </Link>
       {crumbList.map((crumb) => (
-        <>
+        <Fragment key={crumb.href}>
           <div>/</div>
-          <Link href={crumb.href} key={crumb.href}>
+          <Link href={crumb.href}>
             <div>{crumb.title}</div>
           </Link>
-        </>
+        </Fragment>
       ))}
     </div>
   )

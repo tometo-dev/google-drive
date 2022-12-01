@@ -8,6 +8,7 @@ import { RenameResourceDialog } from "./rename-resource-dialog"
 import { AddNewIcon, FileIcon, FolderIcon } from "./icons"
 import { useDeleteResourceMutation } from "../models"
 import { useQueryClient } from "react-query"
+import { useSearchContext } from "../context/search-context"
 
 type ResourceListFileItem = {
   name: string
@@ -28,6 +29,7 @@ function Resource(props: ResourceProps) {
 
   const queryClient = useQueryClient()
   const deleteMutation = useDeleteResourceMutation()
+  const { setSearchText } = useSearchContext()
 
   const [renameDialogOpen, setRenameDialogOpen] = React.useState(false)
 
@@ -56,6 +58,7 @@ function Resource(props: ResourceProps) {
   const handleDoubleClick =
     (link: string) => (_event: React.MouseEvent<HTMLDivElement>) => {
       router.push(link)
+      setSearchText("")
     }
 
   return (
@@ -127,6 +130,7 @@ export interface ResourceListProps {
 
 export function ResourceList({ resources }: ResourceListProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false)
+  const { searchText } = useSearchContext()
 
   const handleAddNewClick = () => {
     setDialogOpen((open) => !open)
@@ -154,7 +158,7 @@ export function ResourceList({ resources }: ResourceListProps) {
           />
         )
       )}
-      <AddNewIcon onClick={handleAddNewClick} />
+      {searchText === "" ? <AddNewIcon onClick={handleAddNewClick} /> : null}
       <CreateNewDialog open={dialogOpen} onClose={handleDialogClose} />
     </div>
   )

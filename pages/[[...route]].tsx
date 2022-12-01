@@ -49,7 +49,7 @@ export default function Home() {
         .map((resource) => ({
           name: resource.name,
           type: resource.type,
-          link: `${resource.path.replace("root/", "")}/${resource.name}`,
+          link: `${resource.path.replace(/^root[\/]?/, "")}/${resource.name}`,
         }))
         .sort((a, b) => b.type.localeCompare(a.type))
     } else {
@@ -61,7 +61,14 @@ export default function Home() {
     <Layout
       navbar={
         <>
-          <BreadCrumbs />
+          {searchText === "" ? (
+            <BreadCrumbs />
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={() => void setSearchText("")}>X</button>
+              <div>Found results: {resources.length} items</div>
+            </div>
+          )}
           <SearchBar value={searchText} onChange={handleSearchTextChange} />
         </>
       }
