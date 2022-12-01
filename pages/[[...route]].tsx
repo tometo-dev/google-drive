@@ -44,7 +44,7 @@ export default function Home() {
   const { data } = useResourceList(currentPath, debouncedSearchText)
 
   const resources: ResourceListProps["resources"] = React.useMemo(() => {
-    if (data) {
+    if (data && Array.isArray(data)) {
       return data
         .map((resource) => ({
           name: resource.name,
