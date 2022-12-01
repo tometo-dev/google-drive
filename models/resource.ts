@@ -14,7 +14,9 @@ type FolderResource = {
 
 export type Resource = FileResource | FolderResource
 
-export async function listResources(path: string, searchText?: string): Promise<Array<Resource>> {
+export type ListResourceResultType = Resource & { path: string }
+
+export async function listResources(path: string, searchText?: string): Promise<Array<ListResourceResultType>> {
   let url = `${LIST_RESOURCE}?path=${path}`
 
   if (searchText) {

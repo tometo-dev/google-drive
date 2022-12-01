@@ -4,6 +4,7 @@ import type { AppProps } from "next/app"
 import { useState } from "react"
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query"
 import { ReactQueryDevtools } from "react-query/devtools"
+import { SearchContextProvider } from "../context/search-context"
 
 // Enable msw for mocking api requests
 if (process.env.NEXT_PUBLIC_API_MOCKING === "enabled") {
@@ -15,7 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <Component {...pageProps} />
+        <SearchContextProvider>
+          <Component {...pageProps} />
+        </SearchContextProvider>
       </Hydrate>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

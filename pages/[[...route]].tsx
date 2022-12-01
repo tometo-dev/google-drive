@@ -8,6 +8,7 @@ import { Layout, ResourceList, ResourceListProps } from "../components"
 import { BreadCrumbs } from "../components/breadcrumbs"
 import { SearchBar } from "../components/search-bar"
 import { useDebounce } from "../utils"
+import { useSearchContext } from "../context/search-context"
 
 const getCurrentPath = (route: string | string[] | undefined) => {
   let path = ""
@@ -22,13 +23,13 @@ const getCurrentPath = (route: string | string[] | undefined) => {
 }
 
 export default function Home() {
-  const { query, asPath } = useRouter()
+  const { query } = useRouter()
 
   const currentPath = React.useMemo(() => {
     return getCurrentPath(query.route)
   }, [query.route])
 
-  const [searchText, setSearchText] = React.useState("")
+  const { searchText, setSearchText } = useSearchContext()
 
   const debouncedSearchText = useDebounce(searchText)
 
@@ -48,13 +49,13 @@ export default function Home() {
         .map((resource) => ({
           name: resource.name,
           type: resource.type,
-          link: `${asPath.replace(/\/$/, "")}/${resource.name}`,
+          link: `${resource.path.replace("root/", "")}/${resource.name}`,
         }))
         .sort((a, b) => b.type.localeCompare(a.type))
     } else {
       return []
     }
-  }, [data, asPath])
+  }, [data])
 
   return (
     <Layout
