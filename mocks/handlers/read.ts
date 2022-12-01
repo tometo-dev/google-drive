@@ -7,6 +7,10 @@ import { readFromLocalDB } from "../../utils"
 import { Resource } from "../../models"
 import { ListResourceResultType } from "../../models/resource"
 
+function replaceDotInName(results: Array<ListResourceResultType>) {
+  return results.map(result => ({ ...result, name: result.name.replaceAll(/\(dot\)/g, ".") }))
+}
+
 function objectToArray(ob: Record<string, Resource>, path: string): Array<ListResourceResultType> {
   const newPath = path.split(".").filter(p => p !== "children").join("/")
   return Object.keys(ob).map(key => ({ ...ob[key], path: newPath }))
@@ -47,14 +51,14 @@ function list(path: string | null, searchText: string | null): Array<ListResourc
 
     searchData(db, searchText, "root", result)
 
-    return result
+    return replaceDotInName(result)
   }
 
   if (!path) {
-    return objectToArray(db, "root")
+    return replaceDotInName(objectToArray(db, "root"))
   }
 
-  return objectToArray(get(db, path) as any, `root.${path}`)
+  return replaceDotInName(objectToArray(get(db, path) as any, `root.${path}`))
 }
 
 export const readHandlers = [

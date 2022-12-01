@@ -6,7 +6,7 @@ import { CreateNewDialog } from "./create-new-dialog"
 import { RenameResourceDialog } from "./rename-resource-dialog"
 
 import { AddNewIcon, FileIcon, FolderIcon } from "./icons"
-import { useDeleteResourceMutation } from "../models"
+import { useCopyResourceMutation, useDeleteResourceMutation } from "../models"
 import { useQueryClient } from "react-query"
 import { useSearchContext } from "../context/search-context"
 
@@ -28,6 +28,7 @@ function Resource(props: ResourceProps) {
   const hiddenDivRef = React.useRef<any>()
 
   const queryClient = useQueryClient()
+  const copyMutation = useCopyResourceMutation()
   const deleteMutation = useDeleteResourceMutation()
   const { setSearchText } = useSearchContext()
 
@@ -88,6 +89,22 @@ function Resource(props: ResourceProps) {
           )}
         </MenuButton>
         <MenuList>
+          <MenuItem
+            onSelect={() => {
+              copyMutation.mutate(
+                {
+                  name: props.name,
+                  path: decodeURI(router.asPath),
+                },
+                {
+                  onSuccess: () =>
+                    queryClient.invalidateQueries(["list-resource"]),
+                }
+              )
+            }}
+          >
+            Copy
+          </MenuItem>
           <MenuItem
             onSelect={() => {
               setRenameDialogOpen(true)

@@ -6,6 +6,7 @@ import { db } from "../db"
 import { updateLocalDB } from "../../utils"
 
 function deleteResource(name: string, path: string) {
+  const nameWithoutDot = name.replaceAll(/\./g, "(dot)")
   let objectPath
   if (path) {
     objectPath = `${path.split("/").filter(p => !!p).join(".children")}.children`
@@ -21,12 +22,12 @@ function deleteResource(name: string, path: string) {
     // resourceObject should always be defined, but a check for unforeseen circumstances
     if (resourceObject) {
       // @ts-ignore
-      delete resourceObject[name]
+      delete resourceObject[nameWithoutDot]
 
       set(db, objectPath, resourceObject)
     }
   } else {
-    delete db[name]
+    delete db[nameWithoutDot]
   }
 
   // update localStorage

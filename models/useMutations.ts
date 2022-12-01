@@ -1,5 +1,5 @@
 import { useMutation } from "react-query"
-import { createResource, CreateResourcePostParams, deleteResource, DeleteResourceParams, renameResource, RenameResourceParams } from "./resource";
+import { copyResource, CopyResourceParams, createResource, CreateResourcePostParams, deleteResource, DeleteResourceParams, renameResource, RenameResourceParams } from "./resource";
 
 export function useCreateResourceMutation() {
   return useMutation(
@@ -16,5 +16,11 @@ export function useRenameResourceMutation() {
 export function useDeleteResourceMutation() {
   return useMutation(
     (params: DeleteResourceParams) => deleteResource(params)
+  )
+}
+
+export function useCopyResourceMutation() {
+  return useMutation(
+    (params: CopyResourceParams) => copyResource(params)
   )
 }

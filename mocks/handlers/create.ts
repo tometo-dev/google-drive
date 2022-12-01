@@ -5,24 +5,21 @@ import { CREATE_RESOURCE } from "../../models/api";
 import { CreateResourcePostParams } from "../../models/resource";
 import { db } from "../db";
 import { updateLocalDB } from "../../utils";
+import { urlPathToObjectPath } from "./utils";
 
-function urlPathToObjectPath(path: string) {
-  const pathArray = path.split("/").filter(x => !!x)
-  if (pathArray.length !== 0) {
-    return `${pathArray.join(".children.")}.children`
-  } else return ""
-}
+
 
 function create(name: string, type: "file" | "folder", path?: string) {
   let result
+  const nameWithoutDot = name.replaceAll(/\./g, "(dot)")
   if (type === "file") {
     result = {
-      name,
+      name: nameWithoutDot,
       type: "file"
     }
   } else {
     result = {
-      name,
+      name: nameWithoutDot,
       type: "folder",
       children: {}
     }
@@ -30,10 +27,10 @@ function create(name: string, type: "file" | "folder", path?: string) {
   if (path) {
     set(db, path, {
       ...get(db, path),
-      [name]: result
+      [nameWithoutDot]: result
     })
   } else {
-    Object.assign(db, { [name]: result })
+    Object.assign(db, { [nameWithoutDot]: result })
   }
 
 

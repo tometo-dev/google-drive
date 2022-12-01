@@ -7,6 +7,8 @@ import { db } from "../db"
 import { updateLocalDB } from "../../utils"
 
 function rename(oldName: string, newName: string, path: string) {
+  const oldNameWithoutDot = oldName.replaceAll(/\./g, "(dot)")
+  const newNameWithoutDot = newName.replaceAll(/\./g, "(dot)")
   let objectPath
   if (path) {
     objectPath = `${path.split("/").filter(p => !!p).join(".children")}.children`
@@ -17,21 +19,21 @@ function rename(oldName: string, newName: string, path: string) {
 
   if (objectPath) {
     const resourceObject = (get(db, objectPath) as any)
-    const newResourceObject = { ...resourceObject[oldName], name: newName }
-    delete resourceObject[oldName]
+    const newResourceObject = { ...resourceObject[oldNameWithoutDot], name: newNameWithoutDot }
+    delete resourceObject[oldNameWithoutDot]
 
     // update the resource object with new info
-    Object.assign(resourceObject, { [newName]: newResourceObject })
+    Object.assign(resourceObject, { [newNameWithoutDot]: newResourceObject })
 
     // update the db
     set(db, objectPath, resourceObject)
 
   } else {
     // objectPath empty for "root" location
-    const newResourceObject = { ...db[oldName], name: newName }
-    Object.assign(db, { [newName]: newResourceObject })
+    const newResourceObject = { ...db[oldNameWithoutDot], name: newNameWithoutDot }
+    Object.assign(db, { [newNameWithoutDot]: newResourceObject })
 
-    delete db[oldName]
+    delete db[oldNameWithoutDot]
     // update the resource object with new info
   }
 
