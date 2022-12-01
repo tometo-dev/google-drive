@@ -47,12 +47,17 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
       )
     }
 
+  const handleClose = () => {
+    onClose()
+    setErrorText("")
+  }
+
   return (
-    <DialogOverlay isOpen={open} onDismiss={onClose}>
+    <DialogOverlay isOpen={open} onDismiss={handleClose}>
       <DialogContent className="relative rounded-lg min-w-[22rem] max-w-[22rem]">
         <div
           className="absolute top-2 right-4 cursor-pointer"
-          onClick={onClose}
+          onClick={handleClose}
         >
           X
         </div>
