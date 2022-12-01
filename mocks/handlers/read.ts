@@ -19,7 +19,7 @@ function objectToArray(ob: Record<string, Resource>, path: string): Array<ListRe
 function searchData(object: Record<string, Resource>, searchText: string, currentPath: string, result: Array<ListResourceResultType>) {
   Object.keys(object).forEach(key => {
     const resource = object[key]
-    if (resource.name.toLowerCase().includes(searchText)) {
+    if (resource.name.toLowerCase().includes(searchText.toLowerCase())) {
       result.push({ ...resource, path: currentPath })
     }
     if (resource.type === "folder" && Object.keys(resource.children).length !== 0) {
