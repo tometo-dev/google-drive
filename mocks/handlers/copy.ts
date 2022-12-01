@@ -16,7 +16,6 @@ function copy(resourceName: string, path?: string) {
   if (path) {
     const resource = get(db, `${path}.${nameWithoutDot}`)
 
-    console.log({ path, db, nameWithoutDot, resource })
     set(db, path, {
       ...get(db, path),
       [newName]: {

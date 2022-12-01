@@ -18,6 +18,8 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
 
+  const [errorText, setErrorText] = React.useState("")
+
   const handleResourceCreate =
     (type: "file" | "folder") =>
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -33,7 +35,13 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
         {
           onSuccess: () => {
             queryClient.invalidateQueries(["list-resource"])
+            setErrorText("")
             onClose()
+          },
+
+          onError: (error: any) => {
+            const message = error?.response?.data?.error
+            setErrorText(message || "Something wrong happened!")
           },
         }
       )
@@ -92,6 +100,14 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
                         placeholder="Name"
                         required
                       />
+                      <span
+                        className={clsx(
+                          { hidden: !errorText },
+                          "text-red-600 mt-2"
+                        )}
+                      >
+                        {errorText}
+                      </span>
                       <button
                         className="bg-blue-400 hover:bg-blue-500 w-full text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline mt-4"
                         type="submit"
@@ -111,6 +127,14 @@ export function CreateNewDialog({ open, onClose }: CreateNewDialogProps) {
                         required
                         pattern="^[\w\-\s]+$"
                       />
+                      <span
+                        className={clsx(
+                          { hidden: !errorText },
+                          "text-red-600 mt-2"
+                        )}
+                      >
+                        {errorText}
+                      </span>
                       <button
                         className="bg-blue-400 hover:bg-blue-500 w-full text-white py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline mt-4"
                         type="submit"

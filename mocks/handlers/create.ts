@@ -25,6 +25,11 @@ function create(name: string, type: "file" | "folder", path?: string) {
     }
   }
   if (path) {
+    const resource = get(db, path)
+    // @ts-ignore
+    if (resource[nameWithoutDot] != undefined) {
+      return false
+    }
     set(db, path, {
       ...get(db, path),
       [nameWithoutDot]: result
@@ -36,6 +41,7 @@ function create(name: string, type: "file" | "folder", path?: string) {
 
   //Persisting data to the localStorage
   updateLocalDB(db)
+  return true
 }
 
 export const createHandlers = [
@@ -43,8 +49,11 @@ export const createHandlers = [
     const body: CreateResourcePostParams = await req.json()
     const objectPath = urlPathToObjectPath(body.path)
 
-    create(body.name, body.type, objectPath)
+    if (create(body.name, body.type, objectPath)) {
+      return res(ctx.status(201), ctx.json({ created: true }))
+    } else {
+      return res(ctx.status(500), ctx.json({ error: `Resource with ${body.name} already exists` }))
+    }
 
-    return res(ctx.status(201), ctx.json({ created: true }))
   })
 ]
